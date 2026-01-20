@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0f0f1a">
+    <title>Diyet Hesaplama</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="apple-mobile-web-app-title" content="Diyet Hesap">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🥗</span>
+                <h1>Diyet Hesaplama Sistemi</h1>
+            </div>
+            <p class="subtitle">Profesyonel Diyetisyen Aracı</p>
+        </header>
+
+        <!-- Danışan Seçici (Üst Bar) -->
+        <div class="patient-selector-bar">
+            <div class="patient-select-wrapper">
+                <label>Danışan:</label>
+                <div class="patient-search-container">
+                    <input type="text" id="patient-search" placeholder="🔍 Ara..." class="patient-search">
+                    <select id="patient-select">
+                        <option value="">-- Yeni Danışan --</option>
+                    </select>
+                </div>
+                <button class="btn-icon" id="btn-new-patient" title="Yeni Danışan">➕</button>
+                <button class="btn-icon" id="btn-save-patient" title="Kaydet">💾</button>
+                <button class="btn-icon danger" id="btn-delete-patient" title="Sil">🗑️</button>
+            </div>
+            <div class="patient-actions">
+                <button class="btn-secondary" id="btn-view-history">📋 Geçmiş</button>
+                <button class="btn-primary" id="btn-save-record">📊 Kaydı Ekle</button>
+            </div>
+        </div>
+
+        <main class="main-content">
+            <!-- Sol Panel: Danışan Bilgileri -->
+            <section class="panel patient-panel">
+                <div class="panel-header">
+                    <h2>👤 Danışan Bilgileri</h2>
+                </div>
+                <div class="panel-content">
+                    <div class="form-group">
+                        <label for="patient-name">Ad Soyad</label>
+                        <input type="text" id="patient-name" placeholder="Danışan adı...">
+                    </div>
+                    <div class="form-group">
+                        <label for="gender">Cinsiyet</label>
+                        <div class="gender-toggle">
+                            <button type="button" class="gender-btn active" data-gender="male">♂ Erkek</button>
+                            <button type="button" class="gender-btn" data-gender="female">♀ Kadın</button>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="height">Boy (cm)</label>
+                            <input type="number" id="height" value="170" min="100" max="250">
+                        </div>
+                        <div class="form-group">
+                            <label for="weight">Kilo (kg)</label>
+                            <input type="number" id="weight" value="70" min="30" max="300">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="age">Yaş</label>
+                        <input type="number" id="age" value="30" min="15" max="100">
+                    </div>
+
+                    <!-- Sonuçlar -->
+                    <div class="results-section">
+                        <h3>📊 Hesaplama Sonuçları</h3>
+                        <div class="result-cards">
+                            <div class="result-card bmi-card">
+                                <span class="result-label">BKİ</span>
+                                <span class="result-value" id="bmi-value">--</span>
+                                <span class="result-unit">kg/m²</span>
+                                <span class="result-status" id="bmi-status">--</span>
+                            </div>
+                            <div class="result-card ideal-card">
+                                <span class="result-label">İdeal Kilo</span>
+                                <span class="result-value" id="ideal-weight">--</span>
+                                <span class="result-unit">kg</span>
+                            </div>
+                        </div>
+
+                        <!-- BMR Formülleri -->
+                        <div class="bmr-section">
+                            <h4>Bazal Metabolizma Hızı (BMR)</h4>
+
+                            <div class="bmr-card primary">
+                                <div class="bmr-header">
+                                    <span class="bmr-name">Harris-Benedict</span>
+                                </div>
+                                <div class="bmr-value-row">
+                                    <span class="bmr-value" id="bmr-hb">--</span>
+                                    <span class="bmr-unit">kcal/gün</span>
+                                </div>
+                            </div>
+
+                            <div class="bmr-card secondary">
+                                <div class="bmr-header">
+                                    <span class="bmr-name">Mifflin-St Jeor</span>
+                                </div>
+                                <div class="bmr-value-row">
+                                    <span class="bmr-value" id="bmr-msj">--</span>
+                                    <span class="bmr-unit">kcal/gün</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Aktivite Düzeyleri (TDEE) -->
+                        <div class="activity-section">
+                            <h4>Günlük Kalori İhtiyacı (TDEE)</h4>
+                            <p class="activity-hint">Harris-Benedict BMR'ye göre hesaplanmıştır</p>
+
+                            <div class="activity-list" id="activity-list">
+                                <div class="activity-item" data-multiplier="1.1">
+                                    <div class="activity-info">
+                                        <span class="activity-name">Hareketsiz (×1.1)</span>
+                                        <span class="activity-desc">Masa başı iş, egzersiz yok</span>
+                                    </div>
+                                    <span class="activity-kcal" id="tdee-1">--</span>
+                                </div>
+                                <div class="activity-item" data-multiplier="1.2">
+                                    <div class="activity-info">
+                                        <span class="activity-name">Hafif Aktif (×1.2)</span>
+                                        <span class="activity-desc">Haftada 1-3 gün hafif egzersiz</span>
+                                    </div>
+                                    <span class="activity-kcal" id="tdee-2">--</span>
+                                </div>
+                                <div class="activity-item" data-multiplier="1.3">
+                                    <div class="activity-info">
+                                        <span class="activity-name">Orta Aktif (×1.3)</span>
+                                        <span class="activity-desc">Haftada 3-5 gün orta egzersiz</span>
+                                    </div>
+                                    <span class="activity-kcal" id="tdee-3">--</span>
+                                </div>
+                                <div class="activity-item" data-multiplier="1.4">
+                                    <div class="activity-info">
+                                        <span class="activity-name">Çok Aktif (×1.4)</span>
+                                        <span class="activity-desc">Haftada 6-7 gün yoğun egzersiz</span>
+                                    </div>
+                                    <span class="activity-kcal" id="tdee-4">--</span>
+                                </div>
+                                <div class="activity-item" data-multiplier="1.5">
+                                    <div class="activity-info">
+                                        <span class="activity-name">Ekstra Aktif (×1.5)</span>
+                                        <span class="activity-desc">Günde 2 kez antrenman / ağır iş</span>
+                                    </div>
+                                    <span class="activity-kcal" id="tdee-5">--</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Orta Panel: Besin Değişim Listesi -->
+            <section class="panel food-panel">
+                <div class="panel-header">
+                    <h2>🍽️ Besin Değişim Listesi</h2>
+                    <p class="panel-hint">Değişim miktarlarını girin</p>
+                </div>
+                <div class="panel-content">
+                    <table class="food-table">
+                        <thead>
+                            <tr>
+                                <th>Besin Grubu</th>
+                                <th>D (Değişim)</th>
+                                <th>KH (g)</th>
+                                <th>Protein (g)</th>
+                                <th>Yağ (g)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="food-table-body">
+                            <tr data-food="milk">
+                                <td class="food-name">🥛 Süt / Yoğurt</td>
+                                <td><input type="number" class="exchange-input" id="milk-d" value="2" min="0" max="20">
+                                </td>
+                                <td class="calc-value" id="milk-carb">18</td>
+                                <td class="calc-value" id="milk-protein">12</td>
+                                <td class="calc-value" id="milk-fat">12</td>
+                            </tr>
+                            <tr data-food="eyp">
+                                <td class="food-name">🍞 EYP (Ekmek Grubu)</td>
+                                <td><input type="number" class="exchange-input" id="eyp-d" value="4" min="0" max="20">
+                                </td>
+                                <td class="calc-value no-value" id="eyp-carb">-</td>
+                                <td class="calc-value" id="eyp-protein">24</td>
+                                <td class="calc-value" id="eyp-fat">20</td>
+                            </tr>
+                            <tr data-food="etk">
+                                <td class="food-name">🥩 ETK (Et Grubu)</td>
+                                <td><input type="number" class="exchange-input" id="etk-d" value="9" min="0" max="20">
+                                </td>
+                                <td class="calc-value" id="etk-carb">135</td>
+                                <td class="calc-value" id="etk-protein">18</td>
+                                <td class="calc-value no-value" id="etk-fat">-</td>
+                            </tr>
+                            <tr data-food="vegetable">
+                                <td class="food-name">🥬 Sebze</td>
+                                <td><input type="number" class="exchange-input" id="vegetable-d" value="1" min="0"
+                                        max="20"></td>
+                                <td class="calc-value" id="vegetable-carb">6</td>
+                                <td class="calc-value" id="vegetable-protein">2</td>
+                                <td class="calc-value no-value" id="vegetable-fat">-</td>
+                            </tr>
+                            <tr data-food="fruit">
+                                <td class="food-name">🍎 Meyve</td>
+                                <td><input type="number" class="exchange-input" id="fruit-d" value="1" min="0" max="20">
+                                </td>
+                                <td class="calc-value" id="fruit-carb">15</td>
+                                <td class="calc-value no-value" id="fruit-protein">-</td>
+                                <td class="calc-value no-value" id="fruit-fat">-</td>
+                            </tr>
+                            <tr data-food="fat">
+                                <td class="food-name">🫒 Yağ</td>
+                                <td><input type="number" class="exchange-input" id="fat-d" value="3" min="0" max="20">
+                                </td>
+                                <td class="calc-value no-value" id="fat-carb">-</td>
+                                <td class="calc-value no-value" id="fat-protein">-</td>
+                                <td class="calc-value" id="fat-fat">15</td>
+                            </tr>
+                            <tr data-food="yt">
+                                <td class="food-name">🥜 YT / SKY</td>
+                                <td><input type="number" class="exchange-input" id="yt-d" value="1" min="0" max="20">
+                                </td>
+                                <td class="calc-value no-value" id="yt-carb">-</td>
+                                <td class="calc-value" id="yt-protein">2</td>
+                                <td class="calc-value" id="yt-fat">5</td>
+                            </tr>
+                            <tr data-food="serbest">
+                                <td class="food-name">🍬 Serbest</td>
+                                <td><input type="number" class="exchange-input" id="serbest-d" value="0" min="0"
+                                        max="20"></td>
+                                <td class="calc-value no-value" id="serbest-carb">-</td>
+                                <td class="calc-value no-value" id="serbest-protein">-</td>
+                                <td class="calc-value no-value" id="serbest-fat">-</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="total-row">
+                                <td><strong>TOPLAM</strong></td>
+                                <td id="total-d">21</td>
+                                <td id="total-carb">174</td>
+                                <td id="total-protein">58</td>
+                                <td id="total-fat">52</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Sağ Panel: Kalori ve Makro Özeti -->
+            <section class="panel summary-panel">
+                <div class="panel-header">
+                    <h2>📈 Makro Özeti</h2>
+                </div>
+                <div class="panel-content">
+                    <!-- Toplam Kalori -->
+                    <div class="calorie-display">
+                        <div class="calorie-circle">
+                            <span class="calorie-value" id="total-calories">1394</span>
+                            <span class="calorie-label">kcal</span>
+                        </div>
+                        <p class="calorie-desc">Günlük Toplam Kalori</p>
+                    </div>
+
+                    <!-- Makro Dağılımı -->
+                    <div class="macro-breakdown">
+                        <h4>Makro Dağılımı</h4>
+                        <div class="macro-bars">
+                            <div class="macro-item carb-item">
+                                <div class="macro-header">
+                                    <span class="macro-name">Karbonhidrat</span>
+                                    <span class="macro-percent" id="carb-percent">50%</span>
+                                </div>
+                                <div class="macro-bar">
+                                    <div class="macro-fill carb-fill" id="carb-bar" style="width: 50%"></div>
+                                </div>
+                                <div class="macro-details">
+                                    <span id="carb-grams">174g</span>
+                                    <span id="carb-kcal">696 kcal</span>
+                                </div>
+                            </div>
+                            <div class="macro-item protein-item">
+                                <div class="macro-header">
+                                    <span class="macro-name">Protein</span>
+                                    <span class="macro-percent" id="protein-percent">17%</span>
+                                </div>
+                                <div class="macro-bar">
+                                    <div class="macro-fill protein-fill" id="protein-bar" style="width: 17%"></div>
+                                </div>
+                                <div class="macro-details">
+                                    <span id="protein-grams">58g</span>
+                                    <span id="protein-kcal">232 kcal</span>
+                                </div>
+                            </div>
+                            <div class="macro-item fat-item">
+                                <div class="macro-header">
+                                    <span class="macro-name">Yağ</span>
+                                    <span class="macro-percent" id="fat-percent">33%</span>
+                                </div>
+                                <div class="macro-bar">
+                                    <div class="macro-fill fat-fill" id="fat-bar" style="width: 33%"></div>
+                                </div>
+                                <div class="macro-details">
+                                    <span id="fat-grams">52g</span>
+                                    <span id="fat-kcal">468 kcal</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hedef Aralıkları -->
+                    <div class="target-ranges">
+                        <h4>Hedef Aralıkları</h4>
+                        <div class="range-item">
+                            <span class="range-label">Karbonhidrat</span>
+                            <span class="range-value" id="carb-range">45-60%</span>
+                        </div>
+                        <div class="range-item">
+                            <span class="range-label">Protein</span>
+                            <span class="range-value" id="protein-range">15-20%</span>
+                        </div>
+                        <div class="range-item">
+                            <span class="range-label">Yağ</span>
+                            <span class="range-value" id="fat-range">25-35%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>Sinem Diyet Hesaplama Sistemi © 2026</p>
+        </footer>
+    </div>
+
+    <!-- Geçmiş Modal -->
+    <div class="modal" id="history-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📋 Danışan Geçmişi</h3>
+                <button class="modal-close" id="close-history">&times;</button>
+            </div>
+            <div class="modal-body" id="history-content">
+                <p class="empty-state">Henüz kayıt yok</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tema Seçici -->
+    <div class="theme-switcher">
+        <div class="theme-btn active" data-theme-id="premium-dark" title="Premium Dark"></div>
+        <div class="theme-btn" data-theme-id="dark" title="Koyu Tema"></div>
+        <div class="theme-btn" data-theme-id="light" title="Aydınlık Tema"></div>
+        <div class="theme-btn" data-theme-id="green" title="Yeşil Tema"></div>
+        <div class="theme-btn" data-theme-id="orange" title="Turuncu Tema"></div>
+    </div>
+
+    <script src="calculations.js"></script>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
