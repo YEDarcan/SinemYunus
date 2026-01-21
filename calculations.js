@@ -16,13 +16,13 @@ const FOOD_EXCHANGE_VALUES = {
         fat: 6        // D × 6
     },
     eyp: {
-        name: 'EYP (Ekmek Grubu)',
+        name: 'ETK (Et Grubu)',
         carb: null,   // Excel'de yok
         protein: 6,   // D × 6
         fat: 5        // D × 5
     },
     etk: {
-        name: 'ETK (Et Grubu)',
+        name: 'EYP (Ekmek Grubu)',
         carb: 15,     // D × 15
         protein: 2,   // D × 2
         fat: null     // Excel'de yok
@@ -52,8 +52,8 @@ const FOOD_EXCHANGE_VALUES = {
         fat: 5        // D × 5
     },
     serbest: {
-        name: 'Serbest',
-        carb: null,   // Excel'de belirsiz
+        name: 'Şeker',
+        carb: 5,      // D × 5
         protein: null,
         fat: null
     }
